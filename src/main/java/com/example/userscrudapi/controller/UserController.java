@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api")
@@ -33,7 +32,7 @@ public class UserController {
         try {
             List<User> users = new ArrayList<>();
 
-            // filter out users
+
             if (email == null && username == null) {
                 users = userService.findAllActiveUsers();
             }

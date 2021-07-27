@@ -22,7 +22,7 @@ public class User {
     public User() {
     }
 
-    // contructor with params
+    // constructor with params
     public User(String username, String firstName, String lastName, String email) {
         this.username = username;
         this.email = email;

@@ -25,15 +25,6 @@ public class UserService {
         return userRepository.findByDeletedFalse();
     }
 
-    public List<User> findAllDeletedUsers() {
-        return userRepository.findByDeletedTrue();
-    }
-
-    // admin only
-    public List<User> findAllUsers() {
-        return userRepository.findAll();
-    }
-
     public Optional<User> findUserById(Long id){
         return userRepository.findUserById(id);
     }
@@ -69,5 +60,14 @@ public class UserService {
         });
         userRepository.saveAll(users);
 
+    }
+
+    // admin only
+    public List<User> findAllDeletedUsers() {
+        return userRepository.findByDeletedTrue();
+    }
+
+    public List<User> findAllUsers() {
+        return userRepository.findAll();
     }
 }
