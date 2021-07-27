@@ -3,7 +3,7 @@ package com.example.userscrudapi.model;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "user", schema = "public")
+@Table(name = "users")
 public class User {
 
     @Id

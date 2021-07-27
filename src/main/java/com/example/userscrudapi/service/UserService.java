@@ -17,10 +17,6 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-    public User addUser(User user) {
-        return userRepository.save(user);
-    }
-
     public List<User> findAllActiveUsers() {
         return userRepository.findByDeletedFalse();
     }
@@ -41,9 +37,22 @@ public class UserService {
                 .orElseThrow(() -> new RuntimeException("User by email '" + email + "' was not found."));
     }
 
-    // combine update and add methods?
-    public User updateUser(User user) {
+    private User saveUser(User user) {
+        if (userRepository.findUserByEmail(user.getEmail()).isPresent()){
+            throw new IllegalStateException("Email '" + user.getEmail() + "' is already in use.");
+        }
+        if (userRepository.findUserByUsername(user.getUsername()).isPresent()) {
+            throw new IllegalStateException("Username '" + user.getUsername() + "' is already in use.");
+        }
         return userRepository.save(user);
+    }
+
+    public User addUser(User user) {
+        return saveUser(user);
+    }
+
+    public User updateUser(User user) {
+        return saveUser(user);
     }
 
     public void deleteUser(Long id) {

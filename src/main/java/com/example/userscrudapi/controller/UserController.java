@@ -2,6 +2,7 @@ package com.example.userscrudapi.controller;
 
 import com.example.userscrudapi.model.User;
 import com.example.userscrudapi.service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,20 +16,27 @@ import java.util.Optional;
 public class UserController {
     private final UserService userService;
 
+    @Autowired
     public UserController(UserService userService) {
         this.userService = userService;
     }
 
     @PostMapping("/users")
     public ResponseEntity<User> addUser(@RequestBody User user) {
-        User newUser = userService.addUser(user);
-        return new ResponseEntity<>(newUser, HttpStatus.CREATED);
+        try {
+            User newUser = userService.addUser(user);
+            return new ResponseEntity<>(newUser, HttpStatus.CREATED);
+
+        } catch (IllegalStateException e) {
+            return new ResponseEntity<>(HttpStatus.CONFLICT);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @GetMapping("/users")
     public ResponseEntity<List<User>> findAllUsers(@RequestParam(value= "email", required = false) String email,
                                                    @RequestParam(value= "username", required = false) String username) {
-
         try {
             List<User> users = new ArrayList<>();
 
@@ -56,18 +64,6 @@ public class UserController {
         }
     }
 
-    @GetMapping("/admin/users")
-    public ResponseEntity<List<User>> findOverallUsers() {
-        List<User> users = userService.findAllUsers();
-        return new ResponseEntity<>(users, HttpStatus.OK);
-    }
-
-    @GetMapping("/admin/users/deleted")
-    public ResponseEntity<List<User>> findDeletedUsers() {
-        List<User> users = userService.findAllDeletedUsers();
-        return new ResponseEntity<>(users, HttpStatus.OK);
-    }
-
     @GetMapping("/users/{id}")
     public ResponseEntity<User> findUserById(@PathVariable("id") Long id) {
         Optional<User> userData = userService.findUserById(id);
@@ -83,10 +79,11 @@ public class UserController {
             User newUser = userService.updateUser(user);
             return new ResponseEntity<>(newUser, HttpStatus.OK);
 
+        } catch (IllegalStateException e) {
+            return new ResponseEntity<>(HttpStatus.CONFLICT);
         } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-
     }
 
     @DeleteMapping("/users/{id}")
@@ -110,4 +107,18 @@ public class UserController {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    // ADMIN
+    @GetMapping("/admin/users")
+    public ResponseEntity<List<User>> findOverallUsers() {
+        List<User> users = userService.findAllUsers();
+        return new ResponseEntity<>(users, HttpStatus.OK);
+    }
+
+    @GetMapping("/admin/users/deleted")
+    public ResponseEntity<List<User>> findDeletedUsers() {
+        List<User> users = userService.findAllDeletedUsers();
+        return new ResponseEntity<>(users, HttpStatus.OK);
+    }
+
 }
