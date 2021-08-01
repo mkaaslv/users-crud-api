@@ -3,6 +3,7 @@ package com.example.userscrudapi.service;
 import com.example.userscrudapi.model.User;
 import com.example.userscrudapi.repo.IUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -64,9 +65,7 @@ public class UserService {
 
     public void deleteAllUsers() {
         List<User> users = userRepository.findAll();
-        users.forEach(u -> {
-            u.setDeleted(true);
-        });
+        users.forEach(u -> u.setDeleted(true));
         userRepository.saveAll(users);
 
     }
@@ -76,6 +75,10 @@ public class UserService {
         return userRepository.findByDeletedTrue();
     }
 
+    public List<User> findAllUsers(Specification<User> spec) {
+        return userRepository.findAll(spec);
+    }
+    // overloading
     public List<User> findAllUsers() {
         return userRepository.findAll();
     }
